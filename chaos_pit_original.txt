@@ -1,0 +1,311 @@
+/* Chaos Pit (10-29-21) by TheMadCADer */
+/* Changes from 1.0: primary turkey distance changed to be closer to town centers, provided space between border trees and trees inside swamp */
+/* Changes from 1.1: middle terrain is now grass */
+/* Changes from 2.0: relics added inside pit */
+/* Changes from 2.1: now regicide compatible */
+/* Changes from 2.2: changed cliff spacing, better resource positioning, some stone outside */
+/* Changes from 2.3: buffalos and stone closer, changed terrains, no cliffs */
+
+#const STATUE1 1171
+#const OAK_FOREST 20
+
+#const BLANKOBJECT 647 /* Placeholder object. */
+	
+<PLAYER_SETUP>
+random_placement
+
+effect_amount GAIA_UPGRADE_UNIT OAKTREE PINETREE 0
+	
+<LAND_GENERATION>
+base_terrain GRASS3
+create_player_lands
+{
+	terrain_type GRASS
+	land_percent 100
+	top_border 29
+	bottom_border 29
+	right_border 30
+	left_border 30
+	base_size 3
+	base_elevation 0
+	circle_radius 17 1
+}
+create_land
+{
+	terrain_type GRASS
+	land_percent 0
+	land_position 50 50
+	land_id 1
+}
+	
+<ELEVATION_GENERATION>
+create_elevation 7
+{
+	base_terrain GRASS3
+	number_of_tiles 100000
+	number_of_clumps 1000
+	set_scale_by_groups
+	spacing 3
+}
+	
+<TERRAIN_GENERATION>
+create_terrain PINE_FOREST
+{
+	base_terrain GRASS3
+	land_percent 100
+	height_limits 6 6
+}
+create_terrain DIRT3
+{
+	base_terrain GRASS3
+	land_percent 100
+	height_limits 7 7
+}
+create_terrain BAMBOO
+{
+	base_terrain GRASS3
+	land_percent 3
+	number_of_clumps 16
+	set_scale_by_groups
+	spacing_to_other_terrain_types 3
+}
+create_terrain OAK_FOREST
+{
+	base_terrain DIRT3
+	land_percent 10
+	number_of_clumps 24
+	set_scale_by_groups
+	spacing_to_other_terrain_types 5
+}
+create_terrain DLC_DRYGRASS
+{
+	base_terrain DIRT3
+	land_percent 10
+	number_of_clumps 24
+	set_scale_by_groups
+	terrain_mask 1
+}
+create_terrain DLC_JUNGLEGRASS
+{
+	base_terrain GRASS
+	land_percent 5
+	number_of_clumps 12
+	set_scale_by_groups
+	terrain_mask 1
+}
+create_terrain DLC_JUNGLEGRASS
+{
+	base_terrain GRASS3
+	land_percent 5
+	number_of_clumps 12
+	set_scale_by_groups
+	terrain_mask 1
+}
+	
+<OBJECTS_GENERATION>
+create_object TOWN_CENTER
+{
+	set_place_for_every_player
+	min_distance_to_players 0
+	max_distance_to_players 0
+}
+create_object VILLAGER
+{
+	set_place_for_every_player
+	min_distance_to_players 6
+	max_distance_to_players 6
+}
+create_object SCOUT
+{
+	set_place_for_every_player
+	min_distance_to_players 7
+	max_distance_to_players 9
+}
+if REGICIDE /* regicide objects */
+create_object VILLAGER
+{
+	number_of_objects 7
+	set_place_for_every_player
+	min_distance_to_players 6
+	max_distance_to_players 6
+}
+create_object KING
+{
+	set_place_for_every_player
+	min_distance_to_players 6
+	max_distance_to_players 6
+}
+create_object WATCH_TOWER
+{
+	set_place_for_every_player
+	find_closest
+	terrain_to_place_on GRASS3
+}
+endif
+create_object BLANKOBJECT {
+  number_of_objects 9999
+  terrain_to_place_on GRASS3
+  set_gaia_object_only
+  temp_min_distance_group_placement 2
+  actor_area 1
+  actor_area_radius 10
+}
+create_object RELIC {
+  number_of_objects 6
+  min_distance_to_players 20
+  min_distance_group_placement 5
+  temp_min_distance_group_placement 70
+  terrain_to_place_on DIRT3
+  avoid_forest_zone 3
+  min_distance_to_map_edge 10
+  avoid_actor_area 1
+}
+if DEATH_MATCH
+else
+create_object DLC_WATERBUFFALO /* primary */
+{
+	number_of_objects 3
+	number_of_groups 2
+	set_loose_grouping
+	set_place_for_every_player
+	min_distance_to_players 7
+	max_distance_to_players 8
+	set_circular_placement
+}
+/* NEAR BERRIES */
+create_object FORAGE
+{
+	number_of_objects 6
+	group_placement_radius 3
+	set_tight_grouping
+	set_gaia_object_only
+	set_place_for_every_player
+	min_distance_to_players 9
+	max_distance_to_players 10
+	min_distance_group_placement 6
+	avoid_forest_zone 1
+}
+/* HILL BERRIES */
+create_object FORAGE
+{
+	number_of_objects 5
+	number_of_groups 1
+	set_tight_grouping
+	group_placement_radius 4
+	set_gaia_object_only
+	set_place_for_every_player
+	terrain_to_place_on GRASS3
+	min_distance_to_players 10
+	/* max_distance_to_players 20 */
+	find_closest
+	min_distance_group_placement 3
+	temp_min_distance_group_placement 10
+	avoid_forest_zone 1
+}
+create_object DEER
+{
+	number_of_objects 3
+	set_place_for_every_player
+	set_gaia_object_only
+	set_loose_grouping
+	min_distance_group_placement 3
+	min_distance_to_players 10
+	find_closest
+}
+create_object DEER
+{
+	number_of_objects 2
+	set_place_for_every_player
+	set_gaia_object_only
+	set_loose_grouping
+	min_distance_group_placement 3
+	min_distance_to_players 10
+	find_closest
+}
+create_object BAMBOO_TREE /* straggler trees */
+{
+	number_of_objects 2
+	set_gaia_object_only
+	set_place_for_every_player
+	min_distance_to_players 4
+	max_distance_to_players 5
+	min_distance_group_placement 2
+}
+create_object BAMBOO_TREE
+{
+	number_of_objects 3
+	set_gaia_object_only
+	set_place_for_every_player
+	min_distance_to_players 6
+	max_distance_to_players 8
+	min_distance_group_placement 2
+}
+endif
+create_object STONE
+{
+	number_of_objects 2
+	number_of_groups 2
+	set_tight_grouping
+	set_gaia_object_only
+	set_place_for_every_player
+	terrain_to_place_on GRASS3
+	min_distance_group_placement 3
+	min_distance_to_players 10
+	/* max_distance_to_players 25 */
+	find_closest
+	temp_min_distance_group_placement 10
+	avoid_forest_zone 1
+}
+create_object GOLD /* extra */
+{
+	number_of_objects 5
+	number_of_groups 100
+	group_variance 1
+	set_tight_grouping
+	group_placement_radius 3
+	set_gaia_object_only
+	set_scaling_to_map_size
+	min_distance_group_placement 10
+	temp_min_distance_group_placement 25
+	min_distance_to_players 15
+	terrain_to_place_on DIRT3
+	avoid_forest_zone 1
+	avoid_cliff_zone 1
+}
+create_object STONE /* extra */
+{
+	number_of_objects 4
+	number_of_groups 100
+	group_variance 1
+	set_tight_grouping
+	group_placement_radius 3
+	set_gaia_object_only
+	set_scaling_to_map_size
+	min_distance_group_placement 10
+	temp_min_distance_group_placement 25
+	min_distance_to_players 15
+	terrain_to_place_on DIRT3
+	avoid_forest_zone 1
+	avoid_cliff_zone 1
+}
+create_object STATUE1
+{
+	place_on_specific_land_id 1
+	find_closest
+}
+create_object BAMBOO_TREE
+{
+	number_of_objects 10
+	set_scaling_to_map_size
+	min_distance_group_placement 3
+	terrain_to_place_on GRASS3
+	min_distance_to_players 10
+}
+create_object BAMBOO_TREE
+{
+	number_of_objects 10
+	set_scaling_to_map_size
+	min_distance_group_placement 3
+	min_distance_to_players 10
+	terrain_to_place_on GRASS
+}

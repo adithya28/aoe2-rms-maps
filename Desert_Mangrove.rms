@@ -1,0 +1,1165 @@
+/*
+	Desert Mangrove by Whistler, 
+	Created: 8/17/2024
+	
+	v0.1 first complete version 1/16/2023
+	Compatibility: Definitive Edition
+
+*/
+
+
+#define MAP_CONSTANTS
+if MAP_CONSTANTS
+
+	#const BASE_TERRAIN 14 /* desert */
+	#const BASE_DESERT 14 
+	#const SPAWN_TERRAIN 3 /* dirt 3 */ 
+	#const SWAMP 54 /* mangrove swamp */
+
+	#const EDGE_TERRAIN 6 /* dirt 1 */
+	#const ROCK_TERRAIN 41 /* edge terrain */
+	#const ROCK_TERRAIN_2 45 /* crack */
+	
+	#const MANGROVE_FOREST 55
+	#const PH_FOREST_1 120
+	#const PH_FOREST_2 121
+	#const PH_FOREST_3 122
+	#const PH_CONNECT_THICK 32
+	#const PH_CONNECT_THIN 33
+	#const CONNECT_FINAL 45
+	
+	#const BROWN_WATER 96
+	#const GREEN_WATER 95
+	
+	#const OUTSIDE_GOLD_TERRAIN 45
+	#const FINAL_SPAWN_TERRAIN 76 /* mud */
+	#const BLEND_DESERT_1 53
+	
+	#const HERDABLE 1060 /* Goat */
+	#const HERDABLE_B 594 /* Sheep */
+
+	#const PH_BLOCK 600 /* invisible unit */
+	#const SAB 706
+	
+	/* palceholders used for positioning */
+	#const PH_NEUTRAL_OFF 346 /* Off-Grid Object - only used for gaia objects */
+	#const PH_PLAYER_OFF 647 /* Off-Grid Object - only used for player objects */
+
+	#const SHRUB_1 1362
+	#const SHRUB_2 1363
+	#const ROCK_A 1048
+	#const ROCK_B 1049
+	#const ROCK_C 1050
+	#const BAOBAB 1052
+	
+	#const MANGROVE_TREE 1144
+	#const KOMODO 1135
+	#const BOX_TURTLES 1141
+	#const BIRD_A 917
+	#const BIRD_B 1028
+	#const SHRUB 123
+	#const WILD_HORSE 1356 /* Wild Horse */
+
+endif
+
+
+<PLAYER_SETUP>
+	random_placement
+
+	#define PRELIMINARIES
+	if PRELIMINARIES
+		behavior_version 1
+	
+		/* Correcting terrain restrictions for deer so they may also generate on beaches. */
+		/* Also making zebra/deer food smaller */
+		effect_amount SET_ATTRIBUTE DEER ATTR_TERRAIN_ID 7
+		effect_amount SET_ATTRIBUTE STONE ATTR_TERRAIN_ID 7
+		effect_amount GAIA_ADD_ATTRIBUTE DEER ATTR_STORAGE_VALUE -40
+		/* Make box turtle food smaller */
+		effect_amount GAIA_ADD_ATTRIBUTE BOX_TURTLE ATTR_STORAGE_VALUE -75
+		
+
+		/* Setting terrain restrictions on various aesthetic objects, so they may not generate in the water. */
+		effect_amount SET_ATTRIBUTE PH_BLOCK ATTR_DEAD_ID -1
+		effect_amount SET_ATTRIBUTE PH_BLOCK ATTR_TERRAIN_ID 0
+		effect_amount SET_ATTRIBUTE PH_BLOCK ATTR_LINE_OF_SIGHT 0
+		effect_amount SET_ATTRIBUTE PH_BLOCK ATTR_HITPOINTS 0
+		effect_amount SET_ATTRIBUTE PH_BLOCK ATTR_STORAGE_VALUE 0
+				
+		/* TODO change tree wood and lizard food */
+		effect_amount GAIA_ADD_ATTRIBUTE KOMODO ATTR_STORAGE_VALUE 60
+		effect_amount GAIA_ADD_ATTRIBUTE KOMODO ATTR_ATTACK 1026 /* this should increase attack by 2 */
+		effect_amount GAIA_ADD_ATTRIBUTE MANGROVE_TREE ATTR_STORAGE_VALUE 150
+
+	endif
+
+
+<LAND_GENERATION>
+base_terrain BASE_TERRAIN
+
+
+create_player_lands
+{
+	terrain_type SPAWN_TERRAIN
+	if MAPSIZE_TINY
+	base_size 8
+	land_percent 5
+	else
+	base_size 8
+	land_percent 6
+	endif
+	clumping_factor 20
+	if MAPSIZE_TINY
+	circle_radius 22
+	else
+	circle_radius 23
+	endif
+	base_elevation 2
+	zone 2
+}
+
+create_land
+{
+	terrain_type WATER
+	if MAPSIZE_TINY
+	number_of_tiles 120
+	base_size 4
+	else
+	number_of_tiles 200
+	base_size 3
+	endif
+	clumping_factor 25
+	base_elevation 0
+	land_position 50 50
+	
+/*	min_placement_distance 29 */
+}
+
+
+create_land 
+{
+	terrain_type SWAMP
+	land_percent 34
+	base_size 5
+	clumping_factor 20
+	top_border 27
+	bottom_border 27
+	left_border 27
+	right_border 27
+	base_elevation 1
+	/* land_position 50 50 */
+	/* other_zone_avoidance_distance 1 */
+}
+
+
+/* inside desert */
+create_land 
+{
+	terrain_type EDGE_TERRAIN
+	land_percent 100
+	base_size 1
+	bottom_border 93
+    base_elevation 3
+	land_position 50 3
+	zone 1
+}
+
+create_land 
+{
+	terrain_type EDGE_TERRAIN
+	land_percent 100
+	base_size 1
+	top_border 93
+    base_elevation 7
+	land_position 50 96
+	zone 1
+}
+create_land 
+{
+	terrain_type EDGE_TERRAIN
+	land_percent 100
+	base_size 1
+	left_border 93
+    base_elevation 7
+	land_position 96 50
+	zone 1
+}
+create_land 
+{
+	terrain_type EDGE_TERRAIN
+	land_percent 100
+	base_size 1
+	right_border 93
+    base_elevation 7
+	land_position 3 50
+	zone 1
+}
+
+create_land 
+{
+	terrain_type EDGE_TERRAIN
+	land_percent 100
+	base_size 1
+	left_border 82
+	top_border 82
+    base_elevation 7
+	land_position 96 96
+	zone 1
+}
+
+create_land 
+{
+	terrain_type EDGE_TERRAIN
+	land_percent 100
+	base_size 1
+	right_border 82
+	bottom_border 82
+    base_elevation 7
+	land_position 3 3
+	zone 1
+}
+
+create_land 
+{
+	terrain_type EDGE_TERRAIN
+	land_percent 100
+	base_size 1
+	right_border 82
+	top_border 82
+    base_elevation 7
+	land_position 3 96
+	zone 1
+}
+
+
+create_land 
+{
+	terrain_type EDGE_TERRAIN
+	land_percent 100
+	base_size 1
+	left_border 82
+	bottom_border 82
+    base_elevation 7
+	land_position 96 3
+	zone 1
+}
+
+
+/* circular outside stuff? */
+
+<ELEVATION_GENERATION>
+
+create_elevation 3
+{
+	base_terrain BASE_DESERT
+	number_of_tiles 100000
+	number_of_clumps 1000
+	enable_balanced_elevation
+}
+
+create_elevation 4
+{
+	base_terrain BASE_DESERT
+	number_of_tiles 1800
+	number_of_clumps 12
+	enable_balanced_elevation
+	set_scale_by_groups
+}
+
+create_elevation 5
+{
+	base_terrain BASE_DESERT
+	number_of_tiles 1200
+	number_of_clumps 12
+	enable_balanced_elevation
+	set_scale_by_groups
+}
+
+create_elevation 7
+{
+	base_terrain EDGE_TERRAIN
+	number_of_tiles 10000
+	number_of_clumps 1
+	enable_balanced_elevation
+	set_scale_by_size 
+}
+
+
+<CLIFF_GENERATION>
+cliff_type CT_DESERT
+if MAPSIZE_TINY
+min_number_of_cliffs 10
+max_number_of_cliffs 11
+else
+min_number_of_cliffs 23
+max_number_of_cliffs 24
+endif
+min_length_of_cliff 5
+max_length_of_cliff 10
+if MAPSIZE_TINY
+min_terrain_distance 5
+else
+min_terrain_distance 10
+endif
+min_distance_cliffs 8
+
+<TERRAIN_GENERATION> 
+
+/* fill in water and make water elevation not look so terrible */
+create_terrain MED_WATER
+{
+	base_terrain WATER
+	land_percent 100
+	spacing_to_other_terrain_types 1
+}
+
+
+create_terrain SWAMP
+{	
+	base_terrain WATER
+	land_percent 100
+}
+create_terrain WATER
+{
+	base_terrain MED_WATER
+	land_percent 100
+}
+
+
+create_terrain DEEP_WATER
+{
+	base_terrain WATER
+	land_percent 100
+	spacing_to_other_terrain_types 1
+}
+
+create_terrain PH_FOREST_1
+{
+	base_terrain SWAMP
+	if MAPSIZE_TINY
+	land_percent 1
+	number_of_clumps 3
+	else
+	land_percent 1
+	number_of_clumps 4
+	endif
+	spacing_to_other_terrain_types 3
+	set_scale_by_groups
+}
+	
+create_terrain PH_FOREST_2
+{
+	base_terrain SWAMP
+	land_percent 2
+	number_of_clumps 5
+	spacing_to_other_terrain_types 3
+	set_scale_by_groups
+}
+
+create_terrain PH_FOREST_3
+{
+	base_terrain SWAMP
+	land_percent 2
+	number_of_clumps 5
+	spacing_to_other_terrain_types 3
+	set_scale_by_groups
+}
+create_terrain MANGROVE_FOREST
+{
+	base_terrain PH_FOREST_1
+	land_percent 100
+	number_of_clumps 100
+	set_scale_by_groups
+}
+
+create_terrain MANGROVE_FOREST
+{
+	base_terrain PH_FOREST_3
+	land_percent 100
+	number_of_clumps 100
+	set_scale_by_groups
+}
+
+create_terrain MANGROVE_FOREST
+{
+	base_terrain PH_FOREST_2
+	land_percent 100
+	number_of_clumps 100
+	set_scale_by_groups
+}
+create_terrain MANGROVE_FOREST
+{
+	base_terrain PH_FOREST_1
+	land_percent 100
+	number_of_clumps 100
+	set_scale_by_groups
+}
+
+create_terrain MANGROVE_FOREST
+{
+	base_terrain PH_FOREST_3
+	land_percent 100
+	number_of_clumps 100
+	set_scale_by_groups
+}
+
+create_terrain MANGROVE_FOREST
+{
+	base_terrain PH_FOREST_2
+	land_percent 100
+	number_of_clumps 100
+	set_scale_by_groups
+}
+create_terrain MANGROVE_FOREST
+{
+	base_terrain PH_FOREST_1
+	land_percent 100
+	number_of_clumps 100
+	set_scale_by_groups
+}
+
+create_terrain MANGROVE_FOREST
+{
+	base_terrain PH_FOREST_3
+	land_percent 100
+	number_of_clumps 100
+	set_scale_by_groups
+}
+
+create_terrain MANGROVE_FOREST
+{
+	base_terrain PH_FOREST_2
+	land_percent 100
+	number_of_clumps 100
+	set_scale_by_groups
+}
+
+create_terrain MANGROVE_FOREST
+{
+	base_terrain PH_FOREST_1
+	land_percent 100
+	number_of_clumps 100
+	set_scale_by_groups
+}
+
+create_terrain MANGROVE_FOREST
+{
+	base_terrain PH_FOREST_3
+	land_percent 100
+	number_of_clumps 100
+	set_scale_by_groups
+}
+
+create_terrain MANGROVE_FOREST
+{
+	base_terrain PH_FOREST_2
+	land_percent 100
+	number_of_clumps 100
+	set_scale_by_groups
+}
+create_terrain MANGROVE_FOREST
+{
+	base_terrain PH_FOREST_1
+	land_percent 100
+	number_of_clumps 100
+	set_scale_by_groups
+}
+
+create_terrain MANGROVE_FOREST
+{
+	base_terrain PH_FOREST_3
+	land_percent 100
+	number_of_clumps 100
+	set_scale_by_groups
+}
+
+create_terrain MANGROVE_FOREST
+{
+	base_terrain PH_FOREST_2
+	land_percent 100
+	number_of_clumps 100
+	set_scale_by_groups
+}
+
+/* ROCK ADDITION */
+create_terrain ROCK_TERRAIN
+{
+	base_terrain BASE_DESERT
+	number_of_tiles 30
+	number_of_clumps 30
+	set_scale_by_groups
+	spacing_to_other_terrain_types 5
+	set_avoid_player_start_areas 20
+	height_limits 3 6
+}
+
+create_terrain ROCK_TERRAIN_2
+{
+	base_terrain EDGE_TERRAIN
+	number_of_tiles 20
+	number_of_clumps 15
+	set_scale_by_groups
+}
+create_terrain ROCK_TERRAIN_2
+{
+	base_terrain EDGE_TERRAIN
+	number_of_tiles 20
+	number_of_clumps 15
+	set_scale_by_groups
+}
+
+
+/* PLACEHODLER REPLACEMENT */
+create_terrain FINAL_SPAWN_TERRAIN
+{
+	base_terrain SPAWN_TERRAIN
+	land_percent 100
+	number_of_clumps 100
+	set_scale_by_groups
+}
+
+/* #DECORATION */
+/* random trees that shouldn't be game deciding */
+create_terrain PALM_DESERT 
+{
+	base_terrain BASE_DESERT
+	set_avoid_player_start_areas 20
+	set_scale_by_size 
+	number_of_tiles 50
+	number_of_clumps 22
+	height_limits 3 5
+}
+
+/* BLEND SWAMP */
+create_terrain BROWN_WATER 
+{
+	base_terrain SWAMP
+	number_of_tiles 50
+	number_of_clumps 5
+	set_scale_by_groups
+	terrain_mask 1
+	height_limits 1 1
+}
+
+create_terrain GREEN_WATER 
+{
+	base_terrain SWAMP
+	number_of_tiles 50
+	number_of_clumps 5
+	set_scale_by_groups
+	terrain_mask 1
+	height_limits 1 1
+}
+
+create_terrain BROWN_WATER 
+{
+	base_terrain WATER
+	number_of_tiles 3
+	number_of_clumps 1
+	set_scale_by_groups
+	terrain_mask 1
+}
+
+create_terrain BROWN_WATER 
+{
+	base_terrain DEEP_WATER
+	number_of_tiles 3
+	number_of_clumps 1
+	set_scale_by_groups
+	terrain_mask 1
+}
+
+create_terrain FINAL_SPAWN_TERRAIN 
+{
+	base_terrain SWAMP
+	number_of_tiles 50
+	number_of_clumps 5
+	set_scale_by_groups
+	terrain_mask 1
+	height_limits 1 1
+}
+
+create_terrain BASE_DESERT
+{
+	base_terrain SWAMP
+	number_of_tiles 50
+	number_of_clumps 4
+	terrain_mask 1
+}
+
+/* BLEND ROCK */
+create_terrain BASE_DESERT
+{
+	base_terrain ROCK_TERRAIN
+	number_of_tiles 1000
+	number_of_clumps 512
+	set_scale_by_groups
+	terrain_mask 1
+}
+
+create_terrain FINAL_SPAWN_TERRAIN
+{
+	base_terrain ROCK_TERRAIN_2
+	number_of_tiles 1000
+	number_of_clumps 512
+	set_scale_by_groups
+	terrain_mask 1
+}
+
+/* blend desert */
+
+create_terrain BLEND_DESERT_1
+{
+	base_terrain BASE_DESERT
+	land_percent 2
+	number_of_clumps 30
+	set_scale_by_groups
+	terrain_mask 1
+}
+
+create_terrain BASE_DESERT
+{
+	base_terrain FINAL_SPAWN_TERRAIN
+	land_percent 100 
+	number_of_clumps 512
+	set_scale_by_groups
+	terrain_mask 1
+}
+
+
+create_terrain BROWN_WATER
+{
+	base_terrain BASE_DESERT
+	land_percent 30 
+	number_of_clumps 20
+	set_scale_by_groups
+	terrain_mask 1
+	height_limits 1 2
+}
+
+create_terrain FINAL_SPAWN_TERRAIN
+{
+	base_terrain BASE_DESERT
+	land_percent 10 
+	number_of_clumps 20
+	set_scale_by_groups
+	terrain_mask 1
+	height_limits 1 2
+}
+
+create_terrain BROWN_WATER
+{
+	base_terrain SWAMP
+	land_percent 100 
+	number_of_clumps 20
+	set_scale_by_groups
+	terrain_mask 1
+	height_limits 2 2
+}
+
+
+create_terrain FINAL_SPAWN_TERRAIN
+{
+	base_terrain BEACH
+	land_percent 100 
+	number_of_clumps 512
+	set_scale_by_groups
+	terrain_mask 1
+	height_limits 1 2
+}
+
+create_terrain EDGE_TERRAIN
+{
+	base_terrain BASE_DESERT
+	land_percent 6
+	number_of_clumps 30
+	set_scale_by_groups
+	terrain_mask 1
+}
+
+create_terrain BASE_DESERT
+{
+	base_terrain EDGE_TERRAIN
+	land_percent 6
+	number_of_clumps 30
+	set_scale_by_groups
+	terrain_mask 1
+}
+
+
+create_terrain ROCK_TERRAIN_2
+{
+	base_terrain BASE_DESERT
+	land_percent 3
+	number_of_clumps 30
+	set_scale_by_groups
+	terrain_mask 1
+}
+
+<OBJECTS_GENERATION> 
+create_object TOWN_CENTER {
+	set_place_for_every_player
+	max_distance_to_players 0
+	actor_area 1
+	actor_area_radius 25
+}
+
+create_object SCOUT
+{
+	set_place_for_every_player
+	min_distance_to_players 6
+	max_distance_to_players 7
+	set_circular_placement
+	min_distance_group_placement 1
+}
+
+/* 3 villagers */
+create_object VILLAGER
+{
+	set_place_for_every_player
+	min_distance_to_players       6
+	max_distance_to_players       6
+}
+
+
+create_object HERDABLE
+{
+	set_circular_placement
+	number_of_objects 1
+	set_loose_grouping
+	set_gaia_object_only
+	set_place_for_every_player
+	min_distance_to_players    4
+	max_distance_to_players    5
+}
+
+create_object HERDABLE
+{
+	set_circular_placement
+	number_of_objects 4
+	set_loose_grouping
+	set_gaia_object_only
+	set_place_for_every_player
+	min_distance_to_players    6
+	max_distance_to_players    7
+}
+
+create_object HERDABLE
+{
+	set_circular_placement
+	number_of_objects 2
+	number_of_groups 2
+	set_tight_grouping
+	set_gaia_object_only
+	set_scaling_to_player_number
+	avoid_actor_area 1
+	temp_min_distance_group_placement 50
+	min_distance_group_placement 10
+	avoid_forest_zone 1
+	terrain_to_place_on BASE_DESERT
+	min_distance_to_map_edge 10
+}
+
+create_object HERDABLE
+{
+	set_circular_placement
+	number_of_objects 2
+	number_of_groups 2
+	set_tight_grouping
+	set_gaia_object_only
+	set_scaling_to_player_number
+	avoid_actor_area 1
+	temp_min_distance_group_placement 50
+	min_distance_group_placement 10
+	avoid_forest_zone 1
+	terrain_to_place_on EDGE_TERRAIN
+}
+
+create_object FORAGE
+{
+	set_circular_placement
+	number_of_objects          8
+	group_placement_radius     1
+	set_tight_grouping
+	set_gaia_object_only
+	set_place_for_every_player
+	min_distance_to_players    10
+	max_distance_to_players    14
+	min_distance_group_placement 6
+	avoid_forest_zone 3
+}
+
+
+/* middle animals */
+if MAPSIZE_TINY
+create_actor_area 60 60 8 7
+else
+create_actor_area 100 100 8 10
+endif
+
+create_object DEER
+{
+	number_of_objects 4
+	number_of_groups 1
+ 	actor_area_to_place_in 8  
+	set_gaia_object_only
+	set_tight_grouping
+	set_scaling_to_player_number 
+	set_place_for_every_player
+	min_distance_group_placement 8
+	temp_min_distance_group_placement 10
+	avoid_forest_zone 1
+}
+
+if MAPSIZE_TINY
+create_actor_area 60 60 14 12
+else
+create_actor_area 100 100 14 20
+endif
+create_object DEER
+{
+	number_of_objects 4
+	number_of_groups 1
+ 	actor_area_to_place_in 14
+	avoid_actor_area 8
+	set_gaia_object_only
+	set_tight_grouping
+	set_scaling_to_player_number 
+	set_place_for_every_player
+	temp_min_distance_group_placement 12
+	avoid_forest_zone 1
+}
+
+if MAPSIZE_TINY
+create_actor_area 60 60 18 25
+else
+create_actor_area 100 100 18 25
+endif
+create_object DEER
+{
+	number_of_objects 3
+
+ 	actor_area_to_place_in 18
+	avoid_actor_area 14
+	if MAPSIZE_TINY
+	avoid_actor_area 1
+	number_of_groups 2
+	else
+	number_of_groups 2
+	endif
+	set_gaia_object_only
+	set_tight_grouping
+	set_scaling_to_player_number 
+	set_place_for_every_player
+	terrain_to_place_on SWAMP
+	temp_min_distance_group_placement 10
+	avoid_forest_zone 1
+}
+
+create_actor_area 100 100 30 35
+if MAPSIZE_NORMAL
+create_object DEER
+{
+	number_of_objects 2
+	number_of_groups 1
+	set_place_for_every_player
+	set_tight_grouping
+	set_gaia_object_only
+	set_tight_grouping
+	terrain_to_place_on SWAMP
+	temp_min_distance_group_placement 10
+	avoid_forest_zone 1
+	avoid_actor_area 30
+	
+}
+endif
+
+
+
+create_object FLAG_A
+{
+	number_of_objects 5
+	terrain_to_place_on WATER
+	temp_min_distance_group_placement 1
+	set_scaling_to_player_number	
+	second_object BOX_TURTLES
+}
+
+create_object KOMODO
+{
+	number_of_objects 5
+	terrain_to_place_on SWAMP
+	temp_min_distance_group_placement 10
+	set_scaling_to_player_number
+	set_gaia_object_only
+	min_distance_to_players 20
+}
+
+/* DONE WITH FOOD */
+
+
+/* PLAYER GOLD */
+create_object GOLD
+{
+	number_of_objects 3
+	set_place_for_every_player
+	min_distance_to_players 10
+	max_distance_to_players 12
+	set_tight_grouping
+	set_gaia_object_only
+	min_distance_group_placement 6
+	set_circular_placement
+}
+
+create_object GOLD
+{
+	number_of_objects 3
+	number_of_groups 1
+	set_place_for_every_player
+	min_distance_to_players 15
+	max_distance_to_players 20
+	set_circular_placement	
+	set_tight_grouping
+	set_gaia_object_only
+	min_distance_group_placement 6
+	terrain_to_place_on BASE_DESERT
+}
+
+create_object GOLD
+{
+	number_of_objects 3
+	number_of_groups 1
+	set_place_for_every_player
+	min_distance_to_players 25
+	max_distance_to_players 30
+	set_circular_placement	
+	set_tight_grouping
+	set_gaia_object_only
+	min_distance_group_placement 6
+	terrain_to_place_on BASE_DESERT
+}
+
+create_object STONE 
+{
+	number_of_objects 3
+	set_place_for_every_player
+	min_distance_to_players 11
+	max_distance_to_players 14
+	set_tight_grouping
+	set_gaia_object_only
+	min_distance_group_placement 6
+	set_circular_placement
+}
+
+create_object STONE 
+{
+	number_of_objects 3
+	set_place_for_every_player
+	min_distance_to_players 17
+	max_distance_to_players 20
+	set_tight_grouping
+	set_gaia_object_only
+	min_distance_group_placement 6
+	set_circular_placement
+	terrain_to_place_on BASE_DESERT
+}
+
+create_object BAOBAB
+{	
+	number_of_objects             2
+	set_gaia_object_only
+	set_place_for_every_player
+	min_distance_to_players       4
+	max_distance_to_players       5
+	min_distance_group_placement  2
+	
+}
+create_object BAOBAB
+{	
+	number_of_objects             3
+	set_gaia_object_only
+	set_place_for_every_player
+	min_distance_to_players       6
+	max_distance_to_players       8
+	min_distance_group_placement  2
+	
+}
+
+/* rocks */
+create_object ROCK_A
+{
+	number_of_objects 20
+	set_scaling_to_player_number
+	terrain_to_place_on ROCK_TERRAIN
+	temp_min_distance_group_placement 7
+	actor_area 2000
+	actor_area_radius 1
+	avoid_cliff_zone 3
+}
+
+if MAPSIZE_TINY
+create_actor_area 60 60 1000 50
+else
+create_actor_area 100 100 1000 80
+endif
+
+create_object ROCK_B
+{
+	number_of_objects 20
+	set_scaling_to_player_number
+	terrain_to_place_on ROCK_TERRAIN_2
+	temp_min_distance_group_placement 15
+	avoid_actor_area 1000
+	actor_area 3000
+	actor_area_radius 1
+	avoid_cliff_zone 3
+}
+
+create_object ROCK_B
+{
+	number_of_objects 10
+	set_scaling_to_player_number
+	terrain_to_place_on ROCK_TERRAIN_2
+	temp_min_distance_group_placement 15
+	avoid_actor_area 1000
+	avoid_actor_area 3000
+	actor_area 4000
+	actor_area_radius 1
+	avoid_cliff_zone 3
+}
+
+create_object ROCK_C
+{
+	number_of_objects 20
+	set_scaling_to_player_number
+	terrain_to_place_on ROCK_TERRAIN_2
+	temp_min_distance_group_placement 15
+	avoid_actor_area 1000
+	avoid_cliff_zone 3
+}
+
+/* extra stone gold */
+create_object GOLD
+{
+	number_of_objects 1000
+	actor_area_to_place_in 2000
+	temp_min_distance_group_placement 7
+}
+
+/* extra stone gold */
+create_object GOLD
+{
+	number_of_objects 1000
+	actor_area_to_place_in 2000
+	temp_min_distance_group_placement 7
+	actor_area 5000
+	actor_area_radius 5
+}
+/* extra stone gold */
+
+
+create_object STONE
+{
+	number_of_objects 1111
+	actor_area_to_place_in 3000
+ 	temp_min_distance_group_placement 3
+	actor_area 500
+	actor_area_radius 1
+} 
+
+create_object STONE
+{
+	number_of_objects 1111
+	actor_area_to_place_in 3000
+ 	min_distance_group_placement 3
+	actor_area 500
+	actor_area_radius 1
+} 
+
+
+
+create_object STONE
+{
+	number_of_objects 1111
+	actor_area_to_place_in 3000
+ 	temp_min_distance_group_placement 3
+	actor_area 500
+	actor_area_radius 1
+} 
+
+
+create_object STONE
+{
+	number_of_objects 1111
+	actor_area_to_place_in 4000
+ 	temp_min_distance_group_placement 3
+	actor_area 500
+	actor_area_radius 1
+} 
+
+create_object STONE
+{
+	number_of_objects 1111
+	actor_area_to_place_in 4000
+ 	temp_min_distance_group_placement 3
+	actor_area 500
+	actor_area_radius 1
+} 
+
+
+create_object STONE
+{
+	number_of_objects 1111
+	actor_area_to_place_in 4000
+ 	temp_min_distance_group_placement 3
+	actor_area 500
+	actor_area_radius 1
+} 
+
+
+
+
+
+
+create_object DEAD_PLANT
+{
+	number_of_objects 50
+	temp_min_distance_group_placement 20
+	set_scaling_to_player_number	
+}
+
+create_object DEAD_PLANT
+{
+	number_of_objects 50
+	temp_min_distance_group_placement 7
+	set_scaling_to_player_number	
+	terrain_to_place_on ROCK_TERRAIN
+}
+
+create_object CACTUS
+{
+	number_of_objects 1000
+	temp_min_distance_group_placement 10
+	actor_area_to_place_in 5000
+	avoid_cliff_zone 2
+}
+
+create_object PATH_4
+{
+	number_of_objects 3
+	terrain_to_place_on EDGE_TERRAIN
+}
+
+create_object RELIC
+{
+	number_of_objects 4
+	terrain_to_place_on EDGE_TERRAIN
+	temp_min_distance_group_placement 50
+}
+
+create_object RELIC
+{
+	number_of_objects 1
+	terrain_to_place_on SWAMP
+	min_distance_to_players 30
+}
