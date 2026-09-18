@@ -2,7 +2,7 @@
 #const FLDOG 544
 
 #const BASE_TERRAIN DIRT
-
+#const ANY_TERRAIN -1
 #const MAPSCALE_MODIFIER 1
 #include_drs includes/scaling.inc
 
@@ -225,7 +225,7 @@ endif
 
 /* ****************************************************** */
 <LAND_GENERATION>
-base_terrain DIRT
+base_terrain BASE_TERRAIN
 
 enable_waves 1
 	create_player_lands
@@ -256,47 +256,38 @@ enable_waves 1
 			circle_radius 33 0
 		elseif MAPSIZE_TINY
 			if 2_PLAYER_GAME
-				circle_radius 36 1
+				circle_radius 36 0
 			else
-				circle_radius 36 1
+				circle_radius 36 0
 			endif
 		elseif MAPSIZE_SMALL
-			circle_radius 34 1
+			circle_radius 34 0
 		elseif MAPSIZE_MEDIUM
-			circle_radius 35 2
+			circle_radius 35 0
 		elseif MAPSIZE_NORMAL
-			circle_radius 36 3
+			circle_radius 36 0
 		elseif MAPSIZE_LARGE
-			circle_radius 37 4
+			circle_radius 37 0
 		elseif MAPSIZE_HUGE
-			circle_radius 38 5
+			circle_radius 38 0
 		elseif MAPSIZE_GIANT
-			circle_radius 39 6
+			circle_radius 39 0
 		elseif MAPSIZE_MASSIVE
-			circle_radius 39 6
+			circle_radius 39 0
 		elseif MAPSIZE_ENORMOUS
-			circle_radius 39 6
+			circle_radius 39 0
 		elseif MAPSIZE_COLOSSAL
-			circle_radius 39 6
+			circle_radius 39 0
 		elseif MAPSIZE_INCREDIBLE
-			circle_radius 39 6
+			circle_radius 39 0
 		elseif MAPSIZE_MONSTROUS
-			circle_radius 39 6
+			circle_radius 39 0
 		elseif MAPSIZE_LUDICROUS
-			circle_radius 39 6
+			circle_radius 39 0
 		endif
 	}
 	
-create_land
-	{
-		terrain_type DLC_CRACKED
-		number_of_tiles 512
-		clumping_factor 1
-		other_zone_avoidance_distance 3
-		land_id 510
-	}
-	
-	
+
 create_land {
 	terrain_type WATER
 	land_percent 1
@@ -305,40 +296,20 @@ create_land {
 	zone 1
 }
 
+
 /* ****************************************************** */
 <TERRAIN_GENERATION>
-
-
-
 create_terrain PALM_DESERT
 {
   base_terrain                   BASE_TERRAIN
   set_circular_placement
-  land_percent                   6
-  number_of_clumps               30
+  land_percent                   7
+  number_of_clumps               50
+  terrain_to_place_on			ANY_TERRAIN
   set_avoid_player_start_areas   
   set_loose_grouping  
   set_scale_by_groups
 }
-
-
-
-
-/* SECONDARY FOREST */
-
-create_terrain PALM_DESERT
-{
-  base_terrain                   BASE_TERRAIN
-  land_percent                   2
-  number_of_clumps               15
-  set_avoid_player_start_areas 
-set_circular_placement  
-set_loose_grouping    
-  set_scale_by_groups
-}
-
-/* SECONDARY PATCH */
-
 
 create_terrain DIRT3
 {
@@ -349,10 +320,6 @@ create_terrain DIRT3
   set_scale_by_size
 }
 
-
-/* TERTIARY PATCH */
-
-
 create_terrain GRASS3
 {
   base_terrain                   BASE_TERRAIN
@@ -362,78 +329,24 @@ create_terrain GRASS3
   set_scale_by_size
 }
 
-
-
-	create_terrain FOREST_PLACEHOLDER
-	{
-		base_terrain BASE_TERRAIN
-
-		if RND_GLOBAL_FOREST_SIZE_SMALL
-			land_percent (10 * CONFINED_INCREASE)
-		elseif RND_GLOBAL_FOREST_SIZE_MEDIUM
-			land_percent (12 * CONFINED_INCREASE)
-		elseif RND_GLOBAL_FOREST_SIZE_LARGE
-			land_percent (14 * CONFINED_INCREASE)
-		endif
-
-		if RND_GLOBAL_FOREST_AMOUNT_FEW
-			number_of_clumps (10 * CONFINED_INCREASE)
-		elseif RND_GLOBAL_FOREST_AMOUNT_NORMAL
-			number_of_clumps (12 * CONFINED_INCREASE)
-		elseif RND_GLOBAL_FOREST_AMOUNT_MANY
-			number_of_clumps (14 * CONFINED_INCREASE)
-		endif
-
-		set_scale_by_groups
-		set_avoid_player_start_areas
-		spacing_to_other_terrain_types 6
-	}
+/* 2. CRACKED MOAT LAST: Using terrain_mask 1 allows it to gently layer over the center without moving trees */
+create_terrain DLC_CRACKED
+{
+	base_terrain          BASE_TERRAIN     
+	land_percent          15                
+	number_of_clumps      12               
+	clumping_factor       15               
+	set_scale_by_size
+	spacing_to_other_terrain_types 0       
+	height_limits         0 0              
+	terrain_mask          2               /* Layers textures visually without rewriting object routing */
 	
+	left_border           40
+	right_border          40
+	top_border            40
+	bottom_border         40
+}
 
-	if RND_SPAWN_FOREST_FEW
-		#const PLAYER_FOREST_CLUMPS 2
-	elseif RND_SPAWN_FOREST_NORMAL
-		#const PLAYER_FOREST_CLUMPS 3
-	elseif RND_SPAWN_FOREST_MANY
-		#const PLAYER_FOREST_CLUMPS 4
-	elseif RND_SPAWN_FOREST_EXCESSIVE
-		#const PLAYER_FOREST_CLUMPS 5
-	endif
-
-	if RND_SPAWN_FOREST_SIZE_SMALL
-		#const PLAYER_FOREST_BASE_COUNT 55
-	elseif RND_SPAWN_FOREST_SIZE_MEDIUM
-		#const PLAYER_FOREST_BASE_COUNT 65
-	elseif RND_SPAWN_FOREST_SIZE_LARGE
-		#const PLAYER_FOREST_BASE_COUNT 75
-	elseif RND_SPAWN_FOREST_SIZE_HUGE
-		#const PLAYER_FOREST_BASE_COUNT 85
-	elseif RND_SPAWN_FOREST_SIZE_IMMENSE
-		#const PLAYER_FOREST_BASE_COUNT 100
-	endif
-
-	#const PLAYER_FOREST_TILES (PLAYER_FOREST_BASE_COUNT * PLAYER_FOREST_CLUMPS)
-
-	if RND_SPAWN_FOREST_NEAR
-		#const PLAYER_FOREST_AVOIDANCE 6
-	elseif RND_SPAWN_FOREST_MEDIUM
-		#const PLAYER_FOREST_AVOIDANCE 7
-	elseif RND_SPAWN_FOREST_FAR
-		#const PLAYER_FOREST_AVOIDANCE 8
-	elseif RND_SPAWN_FOREST_DISTANT
-		#const PLAYER_FOREST_AVOIDANCE 8
-	elseif RND_SPAWN_FOREST_REMOTE
-		#const PLAYER_FOREST_AVOIDANCE 9
-	endif
-
-	#const PLAYER_FOREST_AVOIDANCE_EXTERNAL 0
-	#const PLAYER_FOREST_MIN_HEIGHT 0
-	#const PLAYER_FOREST_MAX_HEIGHT 7
-	#const PLAYER_FOREST_SPAWN_AVOIDANCE 0
-	#const PLAYER_FOREST_TEAM_DEDUCTION 0.72
-
-	#include_drs includes/forest.inc
-	
 
 	create_terrain BASE_BLEND_A
 	{
@@ -443,7 +356,7 @@ create_terrain GRASS3
 		clumping_factor 80
 		set_scale_by_groups
 		height_limits 0 0
-		terrain_mask 3
+		terrain_mask 2
 	}
 
 	create_terrain BASE_BLEND_A
@@ -453,7 +366,7 @@ create_terrain GRASS3
 		number_of_clumps 6
 		set_scale_by_groups
 		height_limits 0 0
-		terrain_mask 3
+		terrain_mask 1
 	}
 
 	create_terrain BASE_BLEND_B
@@ -463,7 +376,7 @@ create_terrain GRASS3
 		number_of_clumps 24
 		set_scale_by_groups
 		height_limits 0 0
-		terrain_mask 3
+		terrain_mask 2
 	}
 	
 	create_terrain BASE_BLEND_A
@@ -472,7 +385,7 @@ create_terrain GRASS3
 		land_percent 4
 		number_of_clumps 24
 		set_scale_by_groups
-		terrain_mask 3
+		terrain_mask 1
 	}
 
 	create_terrain BASE_BLEND_C
@@ -481,7 +394,7 @@ create_terrain GRASS3
 		land_percent 4
 		number_of_clumps 24
 		set_scale_by_groups
-		terrain_mask 3
+		terrain_mask 2
 	}
 
 	create_terrain BASE_BLEND_D
@@ -490,7 +403,7 @@ create_terrain GRASS3
 		land_percent 6
 		number_of_clumps 24
 		set_scale_by_groups
-		terrain_mask 3
+		terrain_mask 1
 	}
 
 	create_terrain BASE_FOREST_BLEND
@@ -499,7 +412,7 @@ create_terrain GRASS3
 		land_percent 4
 		number_of_clumps 24
 		set_scale_by_groups
-		terrain_mask 3
+		terrain_mask 2
 	}
 
 
@@ -509,8 +422,8 @@ create_terrain GRASS3
 <OBJECTS_GENERATION>
 
 
-effect_amount GAIA_SET_ATTRIBUTE DLC_ELEPHANT ATTR_HITPOINTS 75
-effect_amount GAIA_SET_ATTRIBUTE DLC_ELEPHANT ATTR_STORAGE_VALUE 500
+effect_amount GAIA_SET_ATTRIBUTE DLC_ELEPHANT ATTR_HITPOINTS 80
+effect_amount GAIA_SET_ATTRIBUTE DLC_ELEPHANT ATTR_STORAGE_VALUE 425
 effect_amount GAIA_SET_ATTRIBUTE DLC_ELEPHANT ATTR_MOVE_SPEED 1.1
 effect_amount GAIA_SET_ATTRIBUTE DLC_ELEPHANT ATTR_REGENERATION_HP_PERCENT 0.1
 effect_amount GAIA_SET_ATTRIBUTE DLC_ELEPHANT ATTR_NAME_ID 56005
@@ -530,7 +443,7 @@ create_object VILLAGER
   set_place_for_every_player
   min_distance_to_players       6
   max_distance_to_players       6
-   set_circular_placement
+  
  }
 
 create_object SCOUT
@@ -621,7 +534,7 @@ create_object FORAGE
 
 create_object GOLD
 {
-  number_of_objects          5
+  number_of_objects          4
   group_placement_radius     3
   set_tight_grouping
   set_gaia_object_only
@@ -643,7 +556,7 @@ create_object GOLD
   set_gaia_object_only
   set_place_for_every_player
   min_distance_to_players    14
-  max_distance_to_players    22
+  max_distance_to_players    17
   min_distance_group_placement 12
   max_distance_to_other_zones  12
   avoid_forest_zone 3
@@ -659,7 +572,7 @@ create_object GOLD
   set_gaia_object_only
   set_place_for_every_player
   min_distance_to_players    18
-  max_distance_to_players    24
+  max_distance_to_players    20
   min_distance_group_placement  10
   max_distance_to_other_zones  10
   avoid_forest_zone 3
@@ -775,8 +688,8 @@ create_object JAVELINA
   set_loose_grouping  
   set_gaia_object_only
   set_place_for_every_player
-  min_distance_to_players    12
-  max_distance_to_players    14
+  min_distance_to_players    10
+find_closest
   avoid_forest_zone 1
   actor_area 667
   actor_area_radius 10
@@ -787,8 +700,9 @@ create_object DLC_ELEPHANT
   set_gaia_object_only
   set_place_for_every_player
   min_distance_to_players    16
-  max_distance_to_players    18
+  avoid_forest_zone 3
   avoid_actor_area 667
+  find_closest
 }
 
 /* ####################################################### */
